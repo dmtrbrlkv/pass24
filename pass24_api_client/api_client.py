@@ -2,6 +2,7 @@ import datetime
 from enum import Enum
 from http import HTTPStatus
 
+import pytz as pytz
 import requests as requests
 
 
@@ -137,7 +138,7 @@ class Pass24ApiClient:
             model_id = self.get_default_vehicle_model_id()
 
         if not starts_at:
-            starts_at = datetime.datetime.now() + datetime.timedelta(minutes=1)
+            starts_at = datetime.datetime.now(pytz.timezone('Europe/Moscow')) + datetime.timedelta(minutes=1)
         expires_at = starts_at + datetime.timedelta(hours=expiration)
 
         if option:
