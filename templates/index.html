@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Заказ пропуска Pass24</title>
+</head>
+<body>
+
+<div style="text-align: center;">
+    <h1>Заказ пропуска Pass24</h1>
+
+    <form action="" method="post" accept-charset="UTF-8">
+        <p>Телефон:</p>
+        <input id="POST-phone" type="text" name="phone" placeholder="7XXXXXXXXXX" required pattern="7\d{10}">
+
+        <p>Пароль:</p>
+        <input id="POST-password" type="password" name="password" required>
+
+        <p>Номер автомобиля:</p>
+        <input id="POST-plate_number" type="text" name="plate_number" placeholder="X000XX000" required>
+
+
+        <p>Модель авто:</p>
+        <select id="POST-vehicle_model" name="vehicle_model">
+            <option selected>Не задана</option>
+            {% for vehicle_model in vehicle_models %}
+                {% if vehicle_model != "Не задана" %}
+                    <option>{{ vehicle_model|e }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+
+        <p>Срок действия (часов):</p>
+        <select id="POST-expiration" name="expiration">
+            <option value=1>1</option>
+            <option value=2 selected>2</option>
+            <option value=6>6</option>
+            <option value=12>12</option>
+            <option value=24>24</option>
+        </select>
+
+        <p>Опция:</p>
+        <input type="radio" id="optionChoice0"
+               name="option" value="Нет" checked>
+        <label for="optionChoice0">Нет</label>
+
+        <input type="radio" id="optionChoice1"
+               name="option" value="Такси">
+        <label for="optionChoice1">Такси</label>
+
+        <input type="radio" id="optionChoice2"
+               name="option" value="Доставка">
+        <label for="optionChoice2">Доставка</label>
+
+        <br>
+        <br>
+        <input type="submit" value="Создать">
+    </form>
+</div>
+
+</body>
+</html>
