@@ -202,13 +202,14 @@ def create_pass(phone, password, plate_number, vehicle_model=None, option=None, 
 
         plate_number = json_data['guestData']['plateNumber']
         model = json_data['guestData']['model']['name']
-        address = json_data['address']['name']
-        tenant = json_data['tenant']['name']
+        # address = json_data['address']['name']
+        # tenant = json_data['tenant']['name']
         starts_at = json_data['startsAt']
         expires_at = json_data['expiresAt']
 
-        res = f'Создан пропуск для {plate_number} (модель - {model}) к жильцу {tenant} по адресу {address}.' \
-              f'Время визита {starts_at} - {expires_at}'
+        # res = f'Создан пропуск для {plate_number} (модель - {model}) к жильцу {tenant} по адресу {address}.' \
+        #       f'Время визита {starts_at} - {expires_at}'
+        res = f'Создан пропуск для {plate_number} (модель - {model}). Время визита {starts_at} - {expires_at}'
 
     except AuthError as e:
         res = f'Ошибка авторизации: {e}'
