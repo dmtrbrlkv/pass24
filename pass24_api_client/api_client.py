@@ -15,6 +15,10 @@ class AuthError(BaseException):
     pass
 
 
+class AddressError(BaseException):
+    pass
+
+
 class ResponseStatusError(BaseException):
     pass
 
@@ -26,12 +30,13 @@ class RequestError(BaseException):
 class Pass24ApiClient:
     BASE_URL = 'https://mobile-api.pass24online.ru/v1/'
 
-    def __init__(self, phone, password):
+    def __init__(self, phone, password, object_id=None):
         self.phone = phone
         self.password = password
         self.token = None
         self.vehicle_models = None
         self.options = None
+        self.object_id = object_id
 
     def get(self, path, body=None, need_token=True, ok_status=HTTPStatus.OK, as_json=True):
         return self.request(RequestMethod.GET, path, body, need_token, ok_status, as_json)
@@ -94,7 +99,19 @@ class Pass24ApiClient:
             json_data = self.get(path, body=None)
             if json_data['error']:
                 raise RequestError(json_data['error'])
-            response_options = json_data['body'][0]['options']
+            if len(json_data['body']) == 0:
+                raise AddressError('У пользователя нет привязанных адресов')
+            if self.object_id:
+                i = None
+                for j, address in enumerate(json_data['body']):
+                    if str(address['id']) == self.object_id:
+                        i = j
+                        break
+                if i is None:
+                    raise AddressError('У пользователя нет привязанных адресов на текущем объекте')
+            else:
+                i = 0
+            response_options = json_data['body'][i]['options']
             options = {}
             for option in response_options:
                 options[option['name']] = option['id']
@@ -125,7 +142,19 @@ class Pass24ApiClient:
         json_data = self.get(path)
         if json_data['error']:
             raise RequestError(json_data['error'])
-        return json_data['body'][0]['id']
+        if len(json_data['body']) == 0:
+            raise AddressError('У пользователя нет привязанных адресов')
+        if self.object_id:
+            i = None
+            for j, address in enumerate(json_data['body']):
+                if str(address['object']['id']) == self.object_id:
+                    i = j
+                    break
+            if i is None:
+                raise AddressError('У пользователя нет привязанных адресов на текущем объекте')
+        else:
+            i = 0
+        return json_data['body'][i]['id']
 
     def create_pass(self, plate_number, vehicle_model=None, starts_at=None, option=None, expiration=24):
         path = 'passes'
@@ -165,9 +194,9 @@ class Pass24ApiClient:
         return json_data['body']
 
 
-def create_pass(phone, password, plate_number, vehicle_model=None, option=None, expiration=24):
+def create_pass(phone, password, plate_number, vehicle_model=None, option=None, expiration=24, object_id=None):
     expiration = int(expiration)
-    client = Pass24ApiClient(phone, password)
+    client = Pass24ApiClient(phone, password, object_id)
     try:
         json_data = client.create_pass(plate_number, vehicle_model=vehicle_model, option=option, expiration=expiration)
 
@@ -186,6 +215,9 @@ def create_pass(phone, password, plate_number, vehicle_model=None, option=None, 
 
     except (ResponseStatusError, RequestError) as e:
         res = f'Ошибка сервера {e}'
+
+    except AddressError as e:
+        res = f'Ошибка адреса {e}'
 
     except BaseException:
         res = 'Неожиданная ошибка'

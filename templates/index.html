@@ -3,12 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Заказ пропуска Pass24</title>
+    <title>Заказ пропуска Pass24{% if object_name %}{{ " - " + object_name }}{% endif %}</title>
 </head>
 <body>
 
 <div style="text-align: center;">
-    <h1>Заказ пропуска Pass24</h1>
+    <h1>Заказ пропуска Pass24{% if object_name %}{{ " - " + object_name }}{% endif %}</h1>
 
     <form action="" method="post" accept-charset="UTF-8">
         <p>Телефон:</p>
